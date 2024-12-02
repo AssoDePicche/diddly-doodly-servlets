@@ -1,6 +1,6 @@
 package com.assodepicche.web;
 
-public enum Status {
+public enum HttpStatus {
   ACCEPTED(202, "Accepted"),
   BAD_GATEWAY(502, "Bad Gateway"),
   BAD_REQUEST(400, "Bad Request"),
@@ -47,14 +47,14 @@ public enum Status {
 
   public final String message;
 
-  Status(int code, String message) {
+  HttpStatus(int code, String message) {
     this.code = code;
 
     this.message = message;
   }
 
-  public static Status from(int code) {
-    for (Status status : Status.values()) {
+  public static HttpStatus from(int code) {
+    for (HttpStatus status : HttpStatus.values()) {
       if (status.code == code) {
         return status;
       }

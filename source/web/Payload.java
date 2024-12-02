@@ -29,11 +29,11 @@ public final class Payload<T> {
     this(code, message, payload, Date.from(ZonedDateTime.now().toInstant()));
   }
 
-  public Payload(Status status, String message, T payload) {
+  public Payload(HttpStatus status, String message, T payload) {
     this(status.code, message, payload);
   }
 
-  public Payload(Status status, T payload) {
+  public Payload(HttpStatus status, T payload) {
     this(status.code, status.message, payload);
   }
 
