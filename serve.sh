@@ -1,9 +1,23 @@
 #!/bin/bash
 
+if [ ! -d "/opt/tomcat/webapps" ]; then
+  echo "ERROR: Apache Tomcat Not Found"
+
+  exit 1
+fi
+
 mvn clean package
 
-docker build -t diddly-doodly-servlets .
+if [ ! -d "target" ]; then
+  echo "ERROR: Cannot compile java project"
+
+  exit 1
+fi
+
+sudo rm -rf /opt/tomcat/webapps/*
+
+sudo mv target/diddly-doodly-servlets.war /opt/tomcat/webapps/
 
 rm -rf target
 
-docker run -p 80:8080 diddly-doodly-servlets
+sudo systemctl restart tomcat
