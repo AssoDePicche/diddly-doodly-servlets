@@ -16,7 +16,7 @@ fi
 
 sudo rm -rf /opt/tomcat/webapps/*
 
-sudo mv target/diddly-doodly-servlets.war /opt/tomcat/webapps/
+sudo mv target/diddly-doodly-servlets.war /opt/tomcat/webapps/ROOT.war
 
 rm -rf target
 
