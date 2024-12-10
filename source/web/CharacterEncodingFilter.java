@@ -4,18 +4,18 @@ import java.io.IOException;
 
 import java.nio.charset.StandardCharsets;
 
-import jakarta.servlet.Filter;
-import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.ServletRequest;
-import jakarta.servlet.ServletResponse;
+import javax.servlet.Filter;
+import javax.servlet.FilterChain;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
 
-import jakarta.servlet.annotation.WebFilter;
+import javax.servlet.annotation.WebFilter;
 
 @WebFilter(
-    filterName = "ServletCharacterEncoding",
+    filterName = "CharacterEncodingFilter",
     urlPatterns = {"/*"})
-public final class ServletCharacterEncoding implements Filter {
+public final class CharacterEncodingFilter implements Filter {
   @Override
   public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
       throws IOException, ServletException {
