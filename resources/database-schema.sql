@@ -65,3 +65,14 @@ CREATE TABLE Users (
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (id)
 );
+
+CREATE UserBook (
+  user CHAR(36) NOT NULL,
+  book CHAR(36) NOT NULL,
+  finished_reading BOOLEAN DEFAULT FALSE,
+  purchased_for DECIMAL(6, 2) NOT NULL,
+  purchased_in ENUM('Bookshop', 'Webshop', 'Literary Event', "Newsagent's shop") NOT NULL,
+  purchased_at DATE,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (user, book)
+);
