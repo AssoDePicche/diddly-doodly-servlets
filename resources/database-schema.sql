@@ -52,3 +52,16 @@ CREATE TABLE CreatorWork (
   FOREIGN KEY (book) REFERENCES Books (id),
   FOREIGN KEY (creator) REFERENCES Creators (id)
 );
+
+CREATE TABLE Users (
+  id CHAR(36) NOT NULL,
+  username VARCHAR(32) UNIQUE NOT NULL,
+  display_name VARCHAR(50) NOT NULL,
+  biography VARCHAR(160) DEFAULT 'Hello there!',
+  email VARCHAR(255) UNIQUE NOT NULL,
+  password BINARY(60) NOT NULL,
+  active BOOLEAN DEFAULT TRUE,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (id)
+);
