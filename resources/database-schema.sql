@@ -76,3 +76,10 @@ CREATE TABLE UserBook (
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (user, book)
 );
+
+CREATE TABLE UserWhishlist (
+  user CHAR(36) NOT NULL,
+  book CHAR(36) NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (user, book)
+);
