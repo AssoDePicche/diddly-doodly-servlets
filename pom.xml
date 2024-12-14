@@ -16,30 +16,30 @@
 
   <dependencies>
     <dependency>
-	    <groupId>org.junit.jupiter</groupId>
-	    <artifactId>junit-jupiter-engine</artifactId>
-	    <version>5.2.0</version>
-	    <scope>test</scope>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter-engine</artifactId>
+      <version>5.2.0</version>
+      <scope>test</scope>
     </dependency>
 
     <dependency>
-	    <groupId>org.junit.platform</groupId>
-	    <artifactId>junit-platform-runner</artifactId>
-	    <version>1.2.0</version>
-	    <scope>test</scope>
+      <groupId>org.junit.platform</groupId>
+      <artifactId>junit-platform-runner</artifactId>
+      <version>1.2.0</version>
+      <scope>test</scope>
     </dependency>
 
     <dependency>
-	    <groupId>org.junit.jupiter</groupId>
-	    <artifactId>junit-jupiter-params</artifactId>
-	    <version>5.2.0</version>
-	    <scope>test</scope>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter-params</artifactId>
+      <version>5.2.0</version>
+      <scope>test</scope>
     </dependency>
 
     <dependency>
-      <groupId>javax.servlet</groupId>
-      <artifactId>javax.servlet-api</artifactId>
-      <version>4.0.1</version>
+      <groupId>jakarta.servlet</groupId>
+      <artifactId>jakarta.servlet-api</artifactId>
+      <version>6.1.0</version>
       <scope>provided</scope>
     </dependency>
 
@@ -133,8 +133,6 @@
             <configuration>
               <includeStale>false</includeStale>
               <style>GOOGLE</style>
-              <formatMain>true</formatMain>
-              <formatTest>true</formatTest>
               <filterModified>false</filterModified>
               <skip>false</skip>
               <fixImports>false</fixImports>
@@ -151,12 +149,12 @@
   </build>
 
   <reporting>
-	  <plugins>
-		  <plugin>
-			  <groupId>org.apache.maven.plugins</groupId>
-			  <artifactId>maven-surefire-report-plugin</artifactId>
-			  <version>2.22.0</version>
-		  </plugin>
-	  </plugins>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-report-plugin</artifactId>
+        <version>2.22.0</version>
+      </plugin>
+    </plugins>
   </reporting>
 </project>
