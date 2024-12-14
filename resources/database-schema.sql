@@ -43,3 +43,12 @@ CREATE TABLE Books (
   PRIMARY KEY (id),
   FOREIGN KEY (publisher) REFERENCES Publishers (id)
 );
+
+CREATE TABLE CreatorWork (
+  book CHAR(36) NOT NULL,
+  creator CHAR(36) NOT NULL,
+  work ENUM('Writer', 'Illustrator', 'Penciller', 'Inker', 'Colorist', 'Letterer'),
+  PRIMARY KEY (book, creator),
+  FOREIGN KEY (book) REFERENCES Books (id),
+  FOREIGN KEY (creator) REFERENCES Creators (id)
+);
