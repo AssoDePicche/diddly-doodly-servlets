@@ -28,3 +28,18 @@ CREATE TABLE Publishers (
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (id)
 );
+
+CREATE TABLE Books (
+  id CHAR(36) NOT NULL,
+  publisher CHAR(36) NOT NULL,
+  name VARCHAR(255) UNIQUE NOT NULL,
+  description TEXT NOT NULL,
+  cover_price DECIMAL(6, 2) NOT NULL,
+  page_count INT NOT NULL,
+  stratification ENUM('Books', 'Comic Books') NOT NULL,
+  published_at DATE NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (id),
+  FOREIGN KEY (publisher) REFERENCES Publishers (id)
+);
