@@ -66,7 +66,7 @@ CREATE TABLE Users (
   PRIMARY KEY (id)
 );
 
-CREATE UserBook (
+CREATE TABLE UserBook (
   user CHAR(36) NOT NULL,
   book CHAR(36) NOT NULL,
   finished_reading BOOLEAN DEFAULT FALSE,
