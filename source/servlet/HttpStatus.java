@@ -1,4 +1,4 @@
-package com.assodepicche.web;
+package com.assodepicche.servlet;
 
 public enum HttpStatus {
   ACCEPTED(202, "Accepted"),
