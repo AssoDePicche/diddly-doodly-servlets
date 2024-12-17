@@ -10,9 +10,7 @@ import jakarta.servlet.ServletResponse;
 
 import jakarta.servlet.annotation.WebFilter;
 
-@WebFilter(
-    filterName = "ContentTypeFilter",
-    urlPatterns = {"/*"})
+@WebFilter("/*")
 public final class ContentTypeFilter implements Filter {
   @Override
   public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
