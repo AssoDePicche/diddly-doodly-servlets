@@ -1,17 +1,10 @@
-package com.assodepicche.servlet;
+package servlet;
 
-import com.assodepicche.domain.Email;
-import com.assodepicche.domain.Password;
-import com.assodepicche.domain.User;
-import com.assodepicche.domain.Username;
+import application.UserService;
 
-import com.assodepicche.shared.ConnectionFactory;
+import domain.User;
 
-import com.assodepicche.infrastructure.UserDAO;
-
-import com.assodepicche.shared.Json;
-
-import jakarta.servlet.ServletException;
+import shared.Json;
 
 import jakarta.servlet.annotation.WebServlet;
 
@@ -19,35 +12,21 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 
-import java.sql.Connection;
 import java.sql.SQLException;
 
 import java.util.Collection;
-import java.util.UUID;
 
 @SuppressWarnings({"serial"})
 @WebServlet("/users")
 public final class UserServlet extends HttpServlet {
-  private UserDAO persistence;
-
-  @Override
-  public void init() throws ServletException {
-    try {
-      Connection connection = ConnectionFactory.getConnection();
-
-      this.persistence = new UserDAO(connection);
-    } catch (Exception exception) {
-      throw new ServletException(exception);
-    }
-  }
+  private UserService service = new UserService();
 
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
     try {
-      Payload<Collection<User>> payload = new Payload<>(HttpStatus.OK, this.persistence.fetch());
+      Payload<Collection<User>> payload = new Payload<>(HttpStatus.OK, this.service.listAllUsers());
 
       response.setStatus(payload.code);
 
@@ -59,6 +38,8 @@ public final class UserServlet extends HttpServlet {
       response.setStatus(payload.code);
 
       response.getWriter().println(payload);
+    } catch (Exception exception) {
+      exception.printStackTrace();
     }
   }
 
@@ -67,15 +48,7 @@ public final class UserServlet extends HttpServlet {
     try {
       Json json = Json.from(request.getReader());
 
-      Username username = Username.from(json.get("username").getAsString());
-
-      Email email = Email.from(json.get("email").getAsString());
-
-      Password password = Password.from(json.get("password").getAsString());
-
-      User user = new User(username, email, password);
-
-      this.persistence.save(user);
+      User user = this.service.createUserFromJson(json);
 
       Payload<User> payload = new Payload<>(HttpStatus.CREATED, user);
 
@@ -95,6 +68,42 @@ public final class UserServlet extends HttpServlet {
       response.setStatus(payload.code);
 
       response.getWriter().println(payload);
+    } catch (Exception exception) {
+      exception.printStackTrace();
     }
+  }
+
+  @Override
+  public void doDelete(HttpServletRequest request, HttpServletResponse response)
+      throws IOException {
+    Payload<String> payload = null;
+
+    try {
+      checkAuthorizationToken(request);
+    } catch (Exception exception) {
+      payload = new Payload<>(HttpStatus.UNAUTHORIZED, exception.getMessage());
+    } finally {
+      response.setStatus(payload.code);
+
+      response.getWriter().println(payload);
+    }
+  }
+
+  private void checkAuthorizationToken(HttpServletRequest request) throws Exception {
+    String token = getAuthorizationToken(request);
+
+    if (token == null || JsonWebToken.isExpired(token)) {
+      throw new Exception("You must log in");
+    }
+  }
+
+  private String getAuthorizationToken(HttpServletRequest request) {
+    String header = request.getHeader("Authorization");
+
+    if (header != null && header.startsWith("Bearer ")) {
+      return header.substring(7);
+    }
+
+    return null;
   }
 }

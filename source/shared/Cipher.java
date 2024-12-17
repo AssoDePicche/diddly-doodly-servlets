@@ -1,4 +1,4 @@
-package com.assodepicche.shared;
+package shared;
 
 public interface Cipher {
   String encrypt(String value);

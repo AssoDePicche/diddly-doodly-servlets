@@ -1,4 +1,4 @@
-package com.assodepicche.shared;
+package shared;
 
 import org.mindrot.jbcrypt.BCrypt;
 

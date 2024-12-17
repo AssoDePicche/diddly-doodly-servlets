@@ -1,4 +1,4 @@
-package com.assodepicche.servlet.filter;
+package servlet.filter;
 
 import java.io.IOException;
 

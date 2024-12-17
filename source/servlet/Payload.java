@@ -1,6 +1,6 @@
-package com.assodepicche.servlet;
+package servlet;
 
-import com.assodepicche.shared.Json;
+import shared.Json;
 
 import java.time.ZonedDateTime;
 

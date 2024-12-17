@@ -1,6 +1,6 @@
-package com.assodepicche.servlet.filter;
+package servlet.filter;
 
-import com.assodepicche.servlet.HttpStatus;
+import servlet.HttpStatus;
 
 import java.io.IOException;
 

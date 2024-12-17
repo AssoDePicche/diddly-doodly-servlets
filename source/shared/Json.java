@@ -1,4 +1,4 @@
-package com.assodepicche.shared;
+package shared;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
