@@ -56,6 +56,12 @@
     </dependency>
 
     <dependency>
+      <groupId>de.svenkubiak</groupId>
+      <artifactId>jBCrypt</artifactId>
+      <version>0.4</version>
+    </dependency>
+
+    <dependency>
       <groupId>com.google.googlejavaformat</groupId>
       <artifactId>google-java-format</artifactId>
       <version>1.25.0</version>
