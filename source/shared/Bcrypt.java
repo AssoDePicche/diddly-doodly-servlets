@@ -10,6 +10,6 @@ public final class Bcrypt implements Cipher {
 
   @Override
   public boolean check(String cipher, String value) {
-    return BCrypt.checkpw(cipher, value);
+    return BCrypt.checkpw(value, cipher);
   }
 }
