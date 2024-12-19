@@ -1,19 +1,15 @@
 package domain;
 
-import java.util.regex.Pattern;
-
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.UUID;
 
 public final class User {
-  private static String regex =
-      "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@" + "(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$";
-
-  private static Pattern pattern = Pattern.compile(regex);
-
   private UUID id;
   private String username;
   private String email;
   private String password;
+  private Collection<Book> books = new ArrayList<>();
 
   public User() {}
 
@@ -29,12 +25,7 @@ public final class User {
     return this.username;
   }
 
-  public void setUsername(String username) throws IllegalArgumentException {
-    if (username == null || username.isEmpty() || username.length() > 32) {
-      throw new IllegalArgumentException(
-          "A username must contain at least one character and not exceed 32 characters");
-    }
-
+  public void setUsername(String username) {
     this.username = username;
   }
 
@@ -42,15 +33,7 @@ public final class User {
     return this.email;
   }
 
-  public void setEmail(String email) throws IllegalArgumentException {
-    if (email == null
-        || email.isEmpty()
-        || email.length() > 255
-        || !pattern.matcher(email).matches()) {
-      throw new IllegalArgumentException(
-          "A email address consists of an email prefix and an email domain");
-    }
-
+  public void setEmail(String email) {
     this.email = email;
   }
 
@@ -58,11 +41,15 @@ public final class User {
     return this.password;
   }
 
-  public void setPassword(String password) throws IllegalArgumentException {
-    if (password == null || password.length() < 8 || password.length() > 32) {
-      throw new IllegalArgumentException("A password  must contain at least 8 characters");
-    }
-
+  public void setPassword(String password) {
     this.password = password;
+  }
+
+  public Collection getBooks() {
+    return this.books;
+  }
+
+  public void add(Book book) {
+    this.books.add(book);
   }
 }
