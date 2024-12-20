@@ -1,7 +1,5 @@
 package servlet;
 
-import application.Container;
-
 import domain.User;
 
 import shared.Json;
@@ -14,28 +12,27 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
 
-import java.sql.SQLException;
+import java.util.Collection;
 
 import persistence.UserDAO;
 
 @SuppressWarnings({"serial"})
 @WebServlet("/users")
 public final class UserServlet extends HttpServlet {
-  private ServletService dispatcher = new ServletService();
-
-  private UserDAO persistence() {
-    return Container.getDAO(UserDAO.class);
-  }
+  private ServletService service = new ServletService();
+  private UserDAO persistence = new UserDAO();
 
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
     try {
-      Payload payload = new Payload(HttpStatus.OK, persistence().fetch());
+      Collection<User> users = this.persistence.fetch();
 
-      dispatcher.dispatch(response, payload);
+      service.dispatch(response, new Payload<Collection<User>>(HttpStatus.OK, users));
     } catch (Exception exception) {
-      dispatcher.dispatch(
-          response, new Payload(HttpStatus.INTERNAL_SERVER_ERROR, exception.getMessage()));
+      service.dispatch(
+          response, new Payload<String>(HttpStatus.INTERNAL_SERVER_ERROR, exception.getMessage()));
+
+      exception.printStackTrace();
     }
   }
 
@@ -52,15 +49,15 @@ public final class UserServlet extends HttpServlet {
 
       user.setPassword(json.get("password").getAsString());
 
-      persistence().save(user);
+      if (!this.persistence.save(user)) {
+        throw new Exception("Cannot create user this time, try again");
+      }
 
-      dispatcher.dispatch(response, new Payload(HttpStatus.CREATED, user));
-    } catch (SQLException exception) {
-      dispatcher.dispatch(
-          response, new Payload(HttpStatus.INTERNAL_SERVER_ERROR, exception.getMessage()));
-    } catch (IllegalArgumentException exception) {
-      dispatcher.dispatch(response, new Payload(HttpStatus.BAD_REQUEST, exception.getMessage()));
+      service.dispatch(response, new Payload<User>(HttpStatus.CREATED, user));
     } catch (Exception exception) {
+      service.dispatch(
+          response, new Payload<String>(HttpStatus.INTERNAL_SERVER_ERROR, exception.getMessage()));
+
       exception.printStackTrace();
     }
   }
@@ -68,8 +65,8 @@ public final class UserServlet extends HttpServlet {
   @Override
   public void doDelete(HttpServletRequest request, HttpServletResponse response)
       throws IOException {
-    Payload payload = new Payload(HttpStatus.UNAUTHORIZED, "");
+    Payload<String> payload = new Payload<>(HttpStatus.UNAUTHORIZED, "");
 
-    dispatcher.dispatch(response, payload);
+    service.dispatch(response, payload);
   }
 }

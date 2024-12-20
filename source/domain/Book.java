@@ -69,8 +69,6 @@ public final class Book {
 
   public void setUser(User user) {
     this.user = user;
-
-    this.user.add(this);
   }
 
   @Override

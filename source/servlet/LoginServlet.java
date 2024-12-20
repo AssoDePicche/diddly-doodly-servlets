@@ -14,8 +14,6 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
 
-import java.sql.SQLException;
-
 import java.util.Optional;
 
 import persistence.UserDAO;
@@ -25,9 +23,7 @@ import shared.Json;
 @SuppressWarnings({"serial"})
 @WebServlet("/login")
 public class LoginServlet extends HttpServlet {
-  private UserDAO persistence() {
-    return Container.getDAO(UserDAO.class);
-  }
+  private UserDAO persistence = new UserDAO();
 
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response)
@@ -41,7 +37,7 @@ public class LoginServlet extends HttpServlet {
 
       String password = json.get("password").getAsString();
 
-      Optional<User> row = persistence().fetch(username);
+      Optional<User> row = this.persistence.fetch(username);
 
       if (!row.isPresent()) {
         throw new Exception("Wrong username or password");

@@ -6,13 +6,13 @@ import java.util.Collection;
 import java.util.Optional;
 
 public interface DataAccessObject<T, ID> {
-  void save(T object) throws SQLException;
+  boolean save(T object);
 
-  void update(T object) throws SQLException;
+  boolean update(T object);
 
-  void remove(T object) throws SQLException;
+  boolean remove(T object);
 
-  Collection<T> fetch() throws SQLException;
+  Collection<T> fetch();
 
-  Optional<T> fetch(ID id) throws SQLException;
+  Optional<T> fetch(ID id);
 }

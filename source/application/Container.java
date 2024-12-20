@@ -15,30 +15,19 @@ import shared.Bcrypt;
 import shared.Cipher;
 
 public final class Container {
-  public static Connection getConnection() {
-    try {
-      String url = "jdbc:mysql://localhost:3306/sandbox";
-      String user = "root";
-      String password = "Pi#31415926535";
+  public static Connection getConnection() throws ClassNotFoundException, SQLException {
+    String url = "jdbc:mysql://localhost:3306/sandbox";
 
-      Class.forName("com.mysql.cj.jdbc.Driver");
+    String user = "root";
 
-      return DriverManager.getConnection(url, user, password);
-    } catch (ClassNotFoundException | SQLException exception) {
-      throw new RuntimeException("Failed to establish database connection");
-    }
+    String password = "Pi#31415926535";
+
+    Class.forName("com.mysql.cj.jdbc.Driver");
+
+    return DriverManager.getConnection(url, user, password);
   }
 
   public static Cipher getCipher() {
     return new Bcrypt();
-  }
-
-  public static <T> T getDAO(Class<T> className) {
-    try {
-      return className.getDeclaredConstructor(Connection.class).newInstance(getConnection());
-    } catch (Exception exception) {
-      // throw new RuntimeException("Failed to create DAO instance for " + className.getName());
-      throw new RuntimeException(exception.getMessage());
-    }
   }
 }

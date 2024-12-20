@@ -9,7 +9,6 @@ import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -17,19 +16,14 @@ import java.util.Optional;
 import java.util.UUID;
 
 public final class BookDAO implements DataAccessObject<Book, UUID> {
-  private Connection connection;
-  private UserDAO persistence;
-
-  public BookDAO(Connection connection) {
-    this.connection = connection;
-    this.persistence = new UserDAO(connection);
-  }
+  private UserDAO persistence = new UserDAO();
 
   @Override
-  public void save(Book book) throws SQLException {
+  public boolean save(Book book) {
     String query = "{call SaveBook(?, ?, ?, ?, ?, ?, ?)}";
 
-    try (CallableStatement statement = this.connection.prepareCall(query)) {
+    try (Connection connection = Container.getConnection();
+        CallableStatement statement = connection.prepareCall(query)) {
       statement.setString(1, book.getID().toString());
 
       statement.setString(2, book.getUser().getID().toString());
@@ -45,14 +39,21 @@ public final class BookDAO implements DataAccessObject<Book, UUID> {
       statement.setDate(7, Date.valueOf(book.getPublishedAt()));
 
       statement.executeUpdate();
+
+      return true;
+    } catch (Exception exception) {
+      exception.printStackTrace();
     }
+
+    return false;
   }
 
   @Override
-  public void update(Book book) throws SQLException {
+  public boolean update(Book book) {
     String query = "{call UpdateBook(?, ?, ?, ?, ?, ?, ?)}";
 
-    try (CallableStatement statement = this.connection.prepareCall(query)) {
+    try (Connection connection = Container.getConnection();
+        CallableStatement statement = connection.prepareCall(query)) {
       statement.setString(1, book.getID().toString());
 
       statement.setString(2, book.getUser().getID().toString());
@@ -68,44 +69,59 @@ public final class BookDAO implements DataAccessObject<Book, UUID> {
       statement.setDate(7, Date.valueOf(book.getPublishedAt()));
 
       statement.executeUpdate();
+
+      return true;
+    } catch (Exception exception) {
+      exception.printStackTrace();
     }
+
+    return false;
   }
 
   @Override
-  public void remove(Book book) throws SQLException {
+  public boolean remove(Book book) {
     String query = "{call RemoveBook(?)}";
 
-    try (CallableStatement statement = this.connection.prepareCall(query)) {
+    try (Connection connection = Container.getConnection();
+        CallableStatement statement = connection.prepareCall(query)) {
       statement.setString(1, book.getID().toString());
 
       statement.executeUpdate();
+
+      return true;
+    } catch (Exception exception) {
+      exception.printStackTrace();
     }
+
+    return false;
   }
 
   @Override
-  public Collection<Book> fetch() throws SQLException {
+  public Collection<Book> fetch() {
     String query = "{call QueryBooks()}";
 
     Collection<Book> books = new ArrayList<>();
 
-    try (CallableStatement statement = this.connection.prepareCall(query)) {
-      try (ResultSet resultSet = statement.executeQuery()) {
-
-        while (resultSet.next()) {
-          books.add(from(resultSet));
-        }
+    try (Connection connection = Container.getConnection();
+        CallableStatement statement = connection.prepareCall(query);
+        ResultSet resultSet = statement.executeQuery()) {
+      while (resultSet.next()) {
+        books.add(from(resultSet));
       }
+    } catch (Exception exception) {
+      exception.printStackTrace();
     }
 
     return books;
   }
 
-  public Collection<Book> fetch(User user) throws SQLException {
+  public Collection<Book> fetch(User user) {
     String query = "{call QueryUserBooks(?)}";
 
     Collection<Book> books = new ArrayList<>();
 
-    try (CallableStatement statement = this.connection.prepareCall(query)) {
+    try (Connection connection = Container.getConnection();
+        CallableStatement statement = connection.prepareCall(query)) {
       statement.setString(1, user.getID().toString());
 
       try (ResultSet resultSet = statement.executeQuery()) {
@@ -113,16 +129,19 @@ public final class BookDAO implements DataAccessObject<Book, UUID> {
           books.add(from(resultSet));
         }
       }
+    } catch (Exception exception) {
+      exception.printStackTrace();
     }
 
     return books;
   }
 
   @Override
-  public Optional<Book> fetch(UUID id) throws SQLException {
+  public Optional<Book> fetch(UUID id) {
     String query = "{call QueryBook(?)}";
 
-    try (CallableStatement statement = this.connection.prepareCall(query)) {
+    try (Connection connection = Container.getConnection();
+        CallableStatement statement = connection.prepareCall(query)) {
       statement.setString(1, id.toString());
 
       try (ResultSet resultSet = statement.executeQuery()) {
@@ -130,12 +149,14 @@ public final class BookDAO implements DataAccessObject<Book, UUID> {
           return Optional.of(from(resultSet));
         }
       }
+    } catch (Exception exception) {
+      exception.printStackTrace();
     }
 
     return Optional.empty();
   }
 
-  private Book from(ResultSet resultSet) throws SQLException {
+  private Book from(ResultSet resultSet) throws Exception {
     Book book = new Book();
 
     book.setID(UUID.fromString(resultSet.getString("id")));
