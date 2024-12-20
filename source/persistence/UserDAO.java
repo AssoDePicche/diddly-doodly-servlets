@@ -17,8 +17,6 @@ import java.util.UUID;
 import persistence.BookDAO;
 
 public final class UserDAO implements DataAccessObject<User, UUID> {
-  private BookDAO persistence = new BookDAO();
-
   @Override
   public boolean save(User user) {
     String query = "{call SaveUser(?, ?, ?, ?)}";
@@ -155,7 +153,7 @@ public final class UserDAO implements DataAccessObject<User, UUID> {
 
     user.setPassword(resultSet.getString("password"));
 
-    Collection<Book> books = this.persistence.fetch(user);
+    Collection<Book> books = new BookDAO().fetch(user);
 
     for (Book book : books) {
       user.add(book);

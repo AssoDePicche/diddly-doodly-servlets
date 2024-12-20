@@ -16,8 +16,6 @@ import java.util.Optional;
 import java.util.UUID;
 
 public final class BookDAO implements DataAccessObject<Book, UUID> {
-  private UserDAO persistence = new UserDAO();
-
   @Override
   public boolean save(Book book) {
     String query = "{call SaveBook(?, ?, ?, ?, ?, ?, ?)}";
@@ -171,7 +169,7 @@ public final class BookDAO implements DataAccessObject<Book, UUID> {
 
     book.setPublishedAt(resultSet.getDate("published_at").toLocalDate());
 
-    book.setUser(this.persistence.fetch(UUID.fromString(resultSet.getString("user"))).orElse(null));
+    book.setUser(new UserDAO().fetch(UUID.fromString(resultSet.getString("user"))).orElse(null));
 
     return book;
   }
