@@ -1,16 +1,18 @@
 package persistence;
 
+import java.sql.SQLException;
+
 import java.util.Collection;
 import java.util.Optional;
 
 public interface DataAccessObject<T, ID> {
-  public abstract void save(T object) throws Exception;
+  void save(T object) throws SQLException;
 
-  public abstract void update(T object) throws Exception;
+  void update(T object) throws SQLException;
 
-  public abstract void remove(T object) throws Exception;
+  void remove(T object) throws SQLException;
 
-  public abstract Collection<T> fetch() throws Exception;
+  Collection<T> fetch() throws SQLException;
 
-  public abstract Optional<T> fetch(ID id) throws Exception;
+  Optional<T> fetch(ID id) throws SQLException;
 }

@@ -6,6 +6,7 @@ import java.util.UUID;
 
 public final class Book {
   private UUID id;
+  private User user;
   private String publisher;
   private String name;
   private Double coverPrice;
@@ -60,5 +61,37 @@ public final class Book {
 
   public void setPublishedAt(LocalDate publishedAt) {
     this.publishedAt = publishedAt;
+  }
+
+  public User getUser() {
+    return this.user;
+  }
+
+  public void setUser(User user) {
+    this.user = user;
+
+    this.user.add(this);
+  }
+
+  @Override
+  public String toString() {
+    return "Book{"
+        + "id="
+        + id
+        + ", user="
+        + user
+        + ", publisher='"
+        + publisher
+        + '\''
+        + ", name='"
+        + name
+        + '\''
+        + ", coverPrice="
+        + coverPrice
+        + ", pageCount="
+        + pageCount
+        + ", publishedAt="
+        + publishedAt
+        + '}';
   }
 }

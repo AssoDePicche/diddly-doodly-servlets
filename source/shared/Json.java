@@ -27,10 +27,10 @@ public final class Json {
   }
 
   public static <T> T from(String json, Class<T> classOfT) {
-    return new Gson().fromJson(json, classOfT);
+    return gson.fromJson(json, classOfT);
   }
 
   public static String from(Object object) {
-    return new Gson().toJson(object);
+    return gson.toJson(object);
   }
 }

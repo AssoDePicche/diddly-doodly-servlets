@@ -1,7 +1,7 @@
 package domain;
 
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.UUID;
 
 public final class User {
@@ -9,7 +9,7 @@ public final class User {
   private String username;
   private String email;
   private String password;
-  private Collection<Book> books = new ArrayList<>();
+  private Collection<Book> books = new HashSet<>();
 
   public User() {}
 
@@ -45,11 +45,45 @@ public final class User {
     this.password = password;
   }
 
-  public Collection getBooks() {
+  public Collection<Book> getBooks() {
     return this.books;
   }
 
   public void add(Book book) {
+    book.setUser(this);
+
     this.books.add(book);
+  }
+
+  @Override
+  public String toString() {
+    StringBuilder builder = new StringBuilder();
+
+    builder
+        .append("User{")
+        .append("id=")
+        .append(id)
+        .append(", username='")
+        .append(username)
+        .append('\'')
+        .append(", email='")
+        .append(email)
+        .append('\'');
+
+    builder.append(", books=[");
+
+    for (Book book : books) {
+      builder.append(book.toString()).append(", ");
+    }
+
+    if (!books.isEmpty()) {
+      builder.setLength(builder.length() - 2);
+    }
+
+    builder.append(']');
+
+    builder.append('}');
+
+    return builder.toString();
   }
 }

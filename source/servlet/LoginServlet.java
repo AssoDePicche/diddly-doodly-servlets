@@ -1,11 +1,8 @@
 package servlet;
 
-import application.UserService;
+import application.Container;
 
-import servlet.HttpStatus;
-import servlet.Payload;
-
-import shared.Json;
+import domain.User;
 
 import jakarta.servlet.ServletException;
 
@@ -19,32 +16,50 @@ import java.io.IOException;
 
 import java.sql.SQLException;
 
+import java.util.Optional;
+
+import persistence.UserDAO;
+
+import shared.Json;
+
 @SuppressWarnings({"serial"})
 @WebServlet("/login")
 public class LoginServlet extends HttpServlet {
-  private UserService service = new UserService();
+  private UserDAO persistence() {
+    return Container.getDAO(UserDAO.class);
+  }
 
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response)
       throws ServletException, IOException {
-    Payload<String> payload = null;
+    Payload payload = null;
 
     try {
       Json json = Json.from(request.getReader());
 
-      String token = this.service.createAuthenticationToken(json);
+      String username = json.get("username").getAsString();
 
-      payload = new Payload<>(HttpStatus.OK, token);
+      String password = json.get("password").getAsString();
+
+      Optional<User> row = persistence().fetch(username);
+
+      if (!row.isPresent()) {
+        throw new Exception("Wrong username or password");
+      }
+
+      User user = row.get();
+
+      if (user == null || !Container.getCipher().check(user.getPassword(), password)) {
+        throw new Exception("Wrong username or password");
+      }
+
+      payload = new Payload(HttpStatus.OK, JsonWebToken.encode(user));
     } catch (IllegalArgumentException exception) {
-      payload = new Payload<>(HttpStatus.BAD_REQUEST, exception.getMessage());
-    } catch (NullPointerException exception) {
-      payload = new Payload<>(HttpStatus.INTERNAL_SERVER_ERROR, exception.getMessage());
+      payload = new Payload(HttpStatus.BAD_REQUEST, exception.getMessage());
     } catch (Exception exception) {
-      payload = new Payload<>(HttpStatus.UNAUTHORIZED, exception.getMessage());
+      payload = new Payload(HttpStatus.UNAUTHORIZED, exception.getMessage());
     } finally {
-      response.setStatus(payload.code);
-
-      response.getWriter().println(payload);
+      new ServletService(request, response).dispatch(payload);
     }
   }
 }

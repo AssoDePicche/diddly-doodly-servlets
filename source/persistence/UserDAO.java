@@ -1,26 +1,35 @@
 package persistence;
 
-import application.Service;
-
+import domain.Book;
 import domain.User;
 
+import java.sql.CallableStatement;
 import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Optional;
 import java.util.UUID;
 
+import persistence.BookDAO;
+
 public final class UserDAO implements DataAccessObject<User, UUID> {
-  private Connection connection = Service.getConnection();
+  private Connection connection;
+  private BookDAO persistence;
+
+  public UserDAO(Connection connection) {
+    this.connection = connection;
+
+    this.persistence = new BookDAO(connection);
+  }
 
   @Override
-  public void save(User user) throws Exception {
-    String query = "INSERT INTO Users (id, username, email, password) VALUES (?, ?, ?, ?)";
+  public void save(User user) throws SQLException {
+    String query = "{call SaveUser(?, ?, ?, ?)}";
 
-    try (PreparedStatement statement = this.connection.prepareStatement(query)) {
+    try (CallableStatement statement = this.connection.prepareCall(query)) {
       user.setID(UUID.randomUUID());
 
       statement.setString(1, user.getID().toString());
@@ -36,89 +45,84 @@ public final class UserDAO implements DataAccessObject<User, UUID> {
   }
 
   @Override
-  public void update(User user) throws Exception {
-    String query = "UPDATE Users SET username = ? SET password = ? WHERE id = ? AND active = TRUE";
+  public void update(User user) throws SQLException {
+    String query = "{call UpdateUser(?, ?, ?)}";
 
-    try (PreparedStatement statement = this.connection.prepareStatement(query)) {
+    try (CallableStatement statement = this.connection.prepareCall(query)) {
+      statement.setString(1, user.getID().toString());
 
-      statement.setString(1, user.getUsername());
+      statement.setString(2, user.getUsername());
 
-      statement.setString(2, user.getPassword());
-
-      statement.setString(3, user.getID().toString());
-
-      statement.executeUpdate();
-    }
-  }
-
-  @Override
-  public void remove(User user) throws Exception {
-    String query = "UPDATE Users SET active = ? WHERE id = ?";
-
-    try (PreparedStatement statement = this.connection.prepareStatement(query)) {
-
-      statement.setBoolean(1, false);
-
-      statement.setString(2, user.getID().toString());
+      statement.setString(3, user.getPassword());
 
       statement.executeUpdate();
     }
   }
 
   @Override
-  public Collection<User> fetch() throws Exception {
-    String query = "SELECT * FROM Users WHERE active = TRUE";
+  public void remove(User user) throws SQLException {
+    String query = "{call RemoveUser(?)}";
 
-    try (PreparedStatement statement = this.connection.prepareStatement(query)) {
+    try (CallableStatement statement = this.connection.prepareCall(query)) {
+      statement.setString(1, user.getID().toString());
 
-      ResultSet resultSet = statement.executeQuery();
+      statement.executeUpdate();
+    }
+  }
 
-      Collection<User> users = new ArrayList<>();
+  @Override
+  public Collection<User> fetch() throws SQLException {
+    String query = "{call QueryUsers()}";
 
-      while (resultSet.next()) {
-        users.add(from(resultSet));
+    Collection<User> users = new ArrayList<>();
+
+    try (CallableStatement statement = this.connection.prepareCall(query)) {
+      try (ResultSet resultSet = statement.executeQuery()) {
+        while (resultSet.next()) {
+          users.add(from(resultSet));
+        }
       }
-
-      return users;
     }
+
+    return users;
   }
 
   @Override
-  public Optional<User> fetch(UUID id) throws Exception {
-    String query = "SELECT * FROM Users WHERE id = ? AND active = TRUE";
+  public Optional<User> fetch(UUID id) throws SQLException {
+    String query = "{call QueryUser(?)}";
 
-    try (PreparedStatement statement = this.connection.prepareStatement(query)) {
-
+    try (CallableStatement statement = this.connection.prepareCall(query)) {
       statement.setString(1, id.toString());
 
-      ResultSet resultSet = statement.executeQuery();
+      try (ResultSet resultSet = statement.executeQuery()) {
 
-      if (!resultSet.next()) {
-        return Optional.empty();
+        if (resultSet.next()) {
+          return Optional.of(from(resultSet));
+        }
       }
 
-      return Optional.ofNullable(from(resultSet));
+      return Optional.empty();
     }
   }
 
-  public Optional<User> fetch(String username) throws Exception {
-    String query = "SELECT * FROM Users WHERE username = ? AND active = TRUE";
+  public Optional<User> fetch(String username) throws SQLException {
+    String query = "{call QueryUserByUsername(?)}";
 
-    try (PreparedStatement statement = this.connection.prepareStatement(query)) {
-
+    try (CallableStatement statement = this.connection.prepareCall(query)) {
       statement.setString(1, username);
 
-      ResultSet resultSet = statement.executeQuery();
+      try (ResultSet resultSet = statement.executeQuery()) {
 
-      if (!resultSet.next()) {
-        return Optional.empty();
+        if (resultSet.next()) {
+          return Optional.of(from(resultSet));
+        }
       }
 
-      return Optional.ofNullable(from(resultSet));
+      return Optional.empty();
     }
   }
 
-  private User from(ResultSet resultSet) throws Exception {
+  private User from(ResultSet resultSet) throws SQLException {
     User user = new User();
 
     user.setID(UUID.fromString(resultSet.getString("id")));
@@ -128,6 +132,12 @@ public final class UserDAO implements DataAccessObject<User, UUID> {
     user.setEmail(resultSet.getString("email"));
 
     user.setPassword(resultSet.getString("password"));
+
+    Collection<Book> books = this.persistence.fetch(user);
+
+    for (Book book : books) {
+      user.add(book);
+    }
 
     return user;
   }

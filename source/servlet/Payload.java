@@ -6,16 +6,16 @@ import java.time.ZonedDateTime;
 
 import java.util.Date;
 
-public final class Payload<T> {
-  public int code;
+public final class Payload {
+  public final int code;
 
-  public String message;
+  public final String message;
 
-  public final T payload;
+  public final Object payload;
 
   public final Date date;
 
-  public Payload(int code, String message, T payload, Date date) {
+  public Payload(int code, String message, Object payload, Date date) {
     this.code = code;
 
     this.message = message;
@@ -25,15 +25,15 @@ public final class Payload<T> {
     this.date = date;
   }
 
-  public Payload(int code, String message, T payload) {
+  public Payload(int code, String message, Object payload) {
     this(code, message, payload, Date.from(ZonedDateTime.now().toInstant()));
   }
 
-  public Payload(HttpStatus status, String message, T payload) {
+  public Payload(HttpStatus status, String message, Object payload) {
     this(status.code, message, payload);
   }
 
-  public Payload(HttpStatus status, T payload) {
+  public Payload(HttpStatus status, Object payload) {
     this(status.code, status.message, payload);
   }
 
