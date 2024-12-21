@@ -2,8 +2,6 @@ package servlet;
 
 import domain.User;
 
-import shared.Json;
-
 import jakarta.servlet.annotation.WebServlet;
 
 import jakarta.servlet.http.HttpServlet;
@@ -21,6 +19,7 @@ import persistence.UserDAO;
 
 import shared.Bcrypt;
 import shared.Cipher;
+import shared.Json;
 
 @SuppressWarnings({"serial"})
 @WebServlet("/users")
