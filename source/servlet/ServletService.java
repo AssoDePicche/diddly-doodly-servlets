@@ -44,4 +44,10 @@ public final class ServletService {
 
     response.getWriter().flush();
   }
+
+  public void dispatch(HttpServletResponse response, Exception exception) throws IOException {
+    dispatch(response, new Payload<>(HttpStatus.INTERNAL_SERVER_ERROR, exception.getMessage()));
+
+    exception.printStackTrace();
+  }
 }
