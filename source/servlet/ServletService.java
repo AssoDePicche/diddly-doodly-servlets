@@ -9,15 +9,7 @@ public final class ServletService {
   private HttpServletRequest request;
   private HttpServletResponse response;
 
-  public ServletService() {}
-
-  public ServletService(HttpServletRequest request, HttpServletResponse response) {
-    this.request = request;
-
-    this.response = response;
-  }
-
-  public boolean isAuthorized() {
+  public boolean isAuthorized(HttpServletRequest request) {
     String header = request.getHeader("Authorization");
 
     if (header == null || !header.startsWith("Bearer ")) {
