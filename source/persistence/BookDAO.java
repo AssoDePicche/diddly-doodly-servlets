@@ -84,9 +84,7 @@ public final class BookDAO implements DataAccessObject<Book, UUID> {
         CallableStatement statement = connection.prepareCall(query)) {
       statement.setString(1, book.getID().toString());
 
-      statement.executeUpdate();
-
-      return true;
+      return statement.executeUpdate() != 1;
     } catch (Exception exception) {
       exception.printStackTrace();
     }

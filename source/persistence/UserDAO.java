@@ -73,9 +73,7 @@ public final class UserDAO implements DataAccessObject<User, UUID> {
         CallableStatement statement = connection.prepareCall(query)) {
       statement.setString(1, user.getID().toString());
 
-      statement.executeUpdate();
-
-      return true;
+      return statement.executeUpdate() != 1;
     } catch (Exception exception) {
       exception.printStackTrace();
     }
