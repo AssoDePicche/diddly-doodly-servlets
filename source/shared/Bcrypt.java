@@ -1,15 +1,17 @@
 package shared;
 
-import org.mindrot.jbcrypt.BCrypt;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 public final class Bcrypt implements Cipher {
+  private static BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+
   @Override
   public String encrypt(String value) {
-    return BCrypt.hashpw(value, BCrypt.gensalt());
+    return encoder.encode(value);
   }
 
   @Override
-  public boolean check(String cipher, String value) {
-    return BCrypt.checkpw(value, cipher);
+  public boolean check(String value, String cipher) {
+    return encoder.matches(value, cipher);
   }
 }
