@@ -68,6 +68,9 @@ public final class User {
         .append('\'')
         .append(", email='")
         .append(email)
+        .append('\'')
+        .append(", password='")
+        .append(password)
         .append('\'');
 
     builder.append(", books=[");
