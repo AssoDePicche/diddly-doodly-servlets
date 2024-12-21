@@ -76,6 +76,15 @@ END $$
 DELIMITER ;
 
 DELIMITER $$
+CREATE PROCEDURE IF NOT EXISTS QueryUserByUsername(
+  IN _username VARCHAR(32)
+)
+BEGIN
+  SELECT * FROM Users WHERE username = _username;
+END $$
+DELIMITER ;
+
+DELIMITER $$
 CREATE PROCEDURE IF NOT EXISTS QueryUserBooks(
   IN _id CHAR(36)
 )
