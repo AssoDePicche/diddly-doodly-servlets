@@ -1,7 +1,5 @@
 package servlet;
 
-import application.Container;
-
 import domain.User;
 
 import jakarta.servlet.ServletException;
@@ -18,44 +16,52 @@ import java.util.Optional;
 
 import persistence.UserDAO;
 
+import shared.Bcrypt;
+import shared.Cipher;
 import shared.Json;
 
 @SuppressWarnings({"serial"})
 @WebServlet("/login")
 public class LoginServlet extends HttpServlet {
+  private ServletService service = new ServletService();
   private UserDAO persistence = new UserDAO();
 
   @Override
-  public void doPost(HttpServletRequest request, HttpServletResponse response)
-      throws ServletException, IOException {
-    Payload payload = null;
-
+  public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
     try {
       Json json = Json.from(request.getReader());
 
       String username = json.get("username").getAsString();
 
+      if (username.isEmpty() || username.length() > 32) {
+        throw new IllegalArgumentException("Username must be up to 32 characters length");
+      }
+
       String password = json.get("password").getAsString();
 
-      Optional<User> row = this.persistence.fetch(username);
+      if (password.length() < 8) {
+        throw new IllegalArgumentException("Password must have at least 8 characters");
+      }
+
+      Optional<User> row = persistence.fetch(username);
 
       if (!row.isPresent()) {
-        throw new Exception("Wrong username or password");
+        throw new IllegalArgumentException("Wrong username or password");
       }
 
       User user = row.get();
 
-      if (user == null || !Container.getCipher().check(user.getPassword(), password)) {
-        throw new Exception("Wrong username or password");
+      Cipher cipher = new Bcrypt();
+
+      if (cipher.check(password, user.getPassword())) {
+        throw new IllegalArgumentException("Wrong username or password");
       }
 
-      payload = new Payload(HttpStatus.OK, JsonWebToken.encode(user));
+      service.dispatch(response, new Payload<>(HttpStatus.OK, JsonWebToken.encode(user)));
     } catch (IllegalArgumentException exception) {
-      payload = new Payload(HttpStatus.BAD_REQUEST, exception.getMessage());
+      service.dispatch(response, new Payload<>(HttpStatus.BAD_REQUEST, exception.getMessage()));
     } catch (Exception exception) {
-      payload = new Payload(HttpStatus.UNAUTHORIZED, exception.getMessage());
-    } finally {
-      new ServletService(request, response).dispatch(payload);
+      service.dispatch(response, exception);
     }
   }
 }
