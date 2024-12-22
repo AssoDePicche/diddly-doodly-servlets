@@ -11,8 +11,6 @@ public final class User {
   private String password;
   private Collection<Book> books = new HashSet<>();
 
-  public User() {}
-
   public UUID getID() {
     return this.id;
   }
