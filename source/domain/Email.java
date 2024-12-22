@@ -7,11 +7,11 @@ public final class Email {
       "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$";
   private static final Pattern pattern = Pattern.compile(regex);
 
-  public static boolean from(String email) throws IllegalArgumentException {
-      if (!pattern.matcher(email).matches()) {
-throw new IllegalArgumentException("Invalid email address");
-      }
+  public static String from(String email) throws IllegalArgumentException {
+    if (!pattern.matcher(email).matches()) {
+      throw new IllegalArgumentException("Invalid email address");
+    }
 
-      return email;
+    return email;
   }
 }
