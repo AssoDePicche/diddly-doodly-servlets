@@ -1,5 +1,6 @@
 package servlet;
 
+import domain.Password;
 import domain.User;
 
 import jakarta.servlet.annotation.WebServlet;
@@ -13,20 +14,13 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.UUID;
 
-import java.util.regex.Pattern;
-
 import persistence.UserDAO;
 
-import shared.Bcrypt;
-import shared.Cipher;
 import shared.Json;
 
 @SuppressWarnings({"serial"})
 @WebServlet("/users")
 public final class UserServlet extends HttpServlet {
-  private static final String regex =
-      "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$";
-  private static final Pattern pattern = Pattern.compile(regex);
   private ServletService service = new ServletService();
   private UserDAO persistence = new UserDAO();
 
@@ -46,38 +40,22 @@ public final class UserServlet extends HttpServlet {
     try {
       Json json = Json.from(request.getReader());
 
-      User user = new User();
-
       String username = json.get("username").getAsString();
-
-      if (username.isEmpty() || username.length() > 32) {
-        throw new IllegalArgumentException("Username must be up to 32 characters length");
-      }
 
       String email = json.get("email").getAsString();
 
-      if (!pattern.matcher(email).matches()) {
-        throw new IllegalArgumentException("Invalid email address");
-      }
-
       String password = json.get("password").getAsString();
 
-      if (password.length() < 8) {
-        throw new IllegalArgumentException("Password must have at least 8 characters");
-      }
+      User user = new User();
 
       user.setUsername(username);
 
       user.setEmail(email);
 
-      Cipher cipher = new Bcrypt();
-
-      user.setPassword(cipher.encrypt(password));
-
-      user.setPassword(password);
+      user.setPassword(Password.hash(password));
 
       if (!persistence.save(user)) {
-        throw new Exception(
+        throw new IllegalArgumentException(
             "Username '" + username + "' or email '" + email + "' are already registered");
       }
 

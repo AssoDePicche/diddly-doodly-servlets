@@ -4,6 +4,8 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.UUID;
 
+import java.util.regex.Pattern;
+
 public final class User {
   private UUID id;
   private String username;
@@ -23,7 +25,11 @@ public final class User {
     return this.username;
   }
 
-  public void setUsername(String username) {
+  public void setUsername(String username) throws IllegalArgumentException {
+    if (username.isEmpty() || username.length() > 32) {
+      throw new IllegalArgumentException("Username must be up to 32 characters length");
+    }
+
     this.username = username;
   }
 
@@ -31,7 +37,16 @@ public final class User {
     return this.email;
   }
 
-  public void setEmail(String email) {
+  public void setEmail(String email) throws IllegalArgumentException {
+    String regex =
+        "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$";
+
+    Pattern pattern = Pattern.compile(regex);
+
+    if (!pattern.matcher(email).matches()) {
+      throw new IllegalArgumentException("Invalid email address");
+    }
+
     this.email = email;
   }
 
@@ -39,7 +54,11 @@ public final class User {
     return this.password;
   }
 
-  public void setPassword(String password) {
+  public void setPassword(String password) throws IllegalArgumentException {
+    if (password.length() < 8) {
+      throw new IllegalArgumentException("Password must have at least 8 characters");
+    }
+
     this.password = password;
   }
 

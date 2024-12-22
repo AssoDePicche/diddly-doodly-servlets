@@ -25,7 +25,11 @@ public final class Book {
     return this.publisher;
   }
 
-  public void setPublisher(String publisher) {
+  public void setPublisher(String publisher) throws IllegalArgumentException {
+    if (publisher.isEmpty() || publisher.length() > 255) {
+      throw new IllegalArgumentException("Publisher must be up to 255 characters length");
+    }
+
     this.publisher = publisher;
   }
 
@@ -33,7 +37,11 @@ public final class Book {
     return this.name;
   }
 
-  public void setName(String name) {
+  public void setName(String name) throws IllegalArgumentException {
+    if (name.isEmpty() || name.length() > 255) {
+      throw new IllegalArgumentException("Name must be up to 255 characters length");
+    }
+
     this.name = name;
   }
 
@@ -41,7 +49,11 @@ public final class Book {
     return this.coverPrice;
   }
 
-  public void setCoverPrice(double coverPrice) {
+  public void setCoverPrice(double coverPrice) throws IllegalArgumentException {
+    if (coverPrice < 0.0) {
+      throw new IllegalArgumentException("Illegal cover price");
+    }
+
     this.coverPrice = coverPrice;
   }
 
@@ -49,7 +61,11 @@ public final class Book {
     return this.pageCount;
   }
 
-  public void setPageCount(int pageCount) {
+  public void setPageCount(int pageCount) throws IllegalArgumentException {
+    if (pageCount <= 0) {
+      throw new IllegalArgumentException("Illegal page count");
+    }
+
     this.pageCount = pageCount;
   }
 
