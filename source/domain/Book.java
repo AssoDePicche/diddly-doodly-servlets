@@ -9,11 +9,9 @@ public final class Book {
   private User user;
   private String publisher;
   private String name;
-  private Double coverPrice;
+  private double coverPrice;
   private int pageCount;
   private LocalDate publishedAt;
-
-  public Book() {}
 
   public UUID getID() {
     return this.id;
@@ -39,11 +37,11 @@ public final class Book {
     this.name = name;
   }
 
-  public Double getCoverPrice() {
+  public double getCoverPrice() {
     return this.coverPrice;
   }
 
-  public void setCoverPrice(Double coverPrice) {
+  public void setCoverPrice(double coverPrice) {
     this.coverPrice = coverPrice;
   }
 
