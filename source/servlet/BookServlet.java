@@ -43,11 +43,7 @@ public final class BookServlet extends HttpServlet {
     try {
       Json json = Json.from(request.getReader());
 
-      if (service.isAuthorized(request)) {
-        throw new IllegalArgumentException("Invalid token");
-      }
-
-      UUID userID = UUID.fromString(json.get("id").getAsString());
+      String token = service.getAuthorizationHeader(request);
 
       String publisher = json.get("publisher").getAsString();
 
@@ -63,9 +59,7 @@ public final class BookServlet extends HttpServlet {
 
       LocalDate publishedAt = LocalDate.parse(dateString, formatter);
 
-      String description = json.get("description").getAsString();
-
-      User user = new UserDAO().fetch(userID).orElse(null);
+      User user = Jwt.decode(token);
 
       Book book = new Book();
 
@@ -99,8 +93,88 @@ public final class BookServlet extends HttpServlet {
   }
 
   @Override
-  public void doPut(HttpServletRequest request, HttpServletResponse response) {}
+  public void doPut(HttpServletRequest request, HttpServletResponse response) {
+    try {
+      Json json = Json.from(request.getReader());
+
+      String token = service.getAuthorizationHeader(request);
+
+      String publisher = json.get("publisher").getAsString();
+
+      String name = json.get("name").getAsString();
+
+      double coverPrice = json.get("coverPrice").getAsDouble();
+
+      int pageCount = json.get("pageCount").getAsInt();
+
+      String dateString = json.get("publishedAt").getAsString();
+
+      DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+      LocalDate publishedAt = LocalDate.parse(dateString, formatter);
+
+      User user = Jwt.decode(token);
+
+      Book book = new Book();
+
+      book.setUser(user);
+
+      book.setPublisher(publisher);
+
+      book.setName(name);
+
+      book.setCoverPrice(coverPrice);
+
+      book.setPageCount(pageCount);
+
+      book.setPublishedAt(publishedAt);
+
+      if (!persistence.update(book)) {
+        throw new IllegalArgumentException(
+            "Book '"
+                + book.getName()
+                + "' not found in collection of '"
+                + user.getUsername()
+                + "'");
+      }
+
+      service.dispatch(response, new Payload<>(HttpStatus.OK, book));
+    } catch (IllegalArgumentException exception) {
+      service.dispatch(response, new Payload<>(HttpStatus.BAD_REQUEST, exception.getMessage()));
+    } catch (Exception exception) {
+      service.dispatch(response, exception);
+    }
+  }
 
   @Override
-  public void doDelete(HttpServletRequest request, HttpServletResponse response) {}
+  public void doDelete(HttpServletRequest request, HttpServletResponse response) {
+try {
+      Json json = Json.from(request.getReader());
+
+      String token = service.getAuthorizationHeader(request);
+
+      User user = Jwt.decode(token);
+
+      Book book = new Book();
+
+      book.setID(UUID.fromString(json.get("book").getAsString()));
+
+      book.setUser(user);
+
+      if (!persistence.remove(book)) {
+        throw new IllegalArgumentException(
+            "Book '"
+                + book.getName()
+                + "' not found in collection of '"
+                + user.getUsername()
+                + "'");
+      }
+
+      service.dispatch(response, new Payload<>(HttpStatus.OK, book));
+    } catch (IllegalArgumentException exception) {
+      service.dispatch(response, new Payload<>(HttpStatus.BAD_REQUEST, exception.getMessage()));
+    } catch (Exception exception) {
+      service.dispatch(response, exception);
+    }
+  }
 }

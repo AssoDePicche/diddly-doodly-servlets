@@ -18,6 +18,8 @@ import java.time.LocalDate;
 
 import java.time.format.DateTimeFormatter;
 
+import java.util.Collection;
+
 class LocalDateAdapter implements JsonSerializer<LocalDate> {
   public JsonElement serialize(LocalDate date, Type type, JsonSerializationContext context) {
     return new JsonPrimitive(date.format(DateTimeFormatter.ISO_LOCAL_DATE));

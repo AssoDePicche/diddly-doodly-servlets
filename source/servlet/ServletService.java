@@ -6,27 +6,20 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 public final class ServletService {
-  private HttpServletRequest request;
-  private HttpServletResponse response;
-
   public boolean isAuthorized(HttpServletRequest request) {
-    String header = request.getHeader("Authorization");
+    String token = getAuthorizationHeader(request);
 
-    if (header == null || !header.startsWith("Bearer ")) {
-      return false;
-    }
-
-    String token = header.substring(7).trim();
-
-    return !token.isEmpty() && !JsonWebToken.isExpired(token);
+    return !token.isEmpty() && !Jwt.isExpired(token);
   }
 
-  public void dispatch(Payload payload) throws IOException {
-    this.response.setStatus(payload.code);
+  public String getAuthorizationHeader(HttpServletRequest request) {
+    String header = request.getHeader("Authorization");
 
-    this.response.getWriter().println(payload.toString());
+    if (header == null) {
+      return null;
+    }
 
-    this.response.getWriter().flush();
+    return header.substring(7);
   }
 
   public void dispatch(HttpServletResponse response, Payload payload) throws IOException {

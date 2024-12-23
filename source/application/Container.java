@@ -1,33 +1,37 @@
 package application;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-
-import shared.Bcrypt;
-import shared.Cipher;
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.SQLException;
-
-import shared.Bcrypt;
-import shared.Cipher;
 
 public final class Container {
-  public static Connection getConnection() throws ClassNotFoundException, SQLException {
-    String url = "jdbc:mysql://localhost:3306/sandbox";
+  private static final HikariDataSource dataSource;
 
-    String user = "root";
+  static {
+    HikariConfig configuration = new HikariConfig();
 
-    String password = "Pi#31415926535";
+    configuration.setJdbcUrl("jdbc:mysql://localhost:3306/sandbox");
 
-    Class.forName("com.mysql.cj.jdbc.Driver");
+    configuration.setUsername("root");
 
-    return DriverManager.getConnection(url, user, password);
+    configuration.setPassword("Pi#31415926535");
+
+    configuration.setDriverClassName("com.mysql.cj.jdbc.Driver");
+
+    configuration.setMaximumPoolSize(10);
+
+    configuration.setMinimumIdle(2);
+
+    configuration.setIdleTimeout(30000);
+
+    configuration.setConnectionTimeout(30000);
+
+    dataSource = new HikariDataSource(configuration);
   }
 
-  public static Cipher getCipher() {
-    return new Bcrypt();
+  public static Connection getConnection() throws SQLException {
+    return dataSource.getConnection();
   }
 }

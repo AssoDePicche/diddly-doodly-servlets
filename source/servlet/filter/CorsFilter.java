@@ -1,7 +1,5 @@
 package servlet.filter;
 
-import servlet.HttpStatus;
-
 import java.io.IOException;
 
 import jakarta.servlet.Filter;
@@ -15,6 +13,10 @@ import jakarta.servlet.annotation.WebFilter;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
+import servlet.HttpStatus;
+import servlet.Payload;
+import servlet.ServletService;
+
 @WebFilter("/*")
 public final class CorsFilter implements Filter {
   @Override
@@ -23,12 +25,18 @@ public final class CorsFilter implements Filter {
     ((HttpServletResponse) response)
         .setHeader("Access-Control-Allow-Origin", "http://localhost:8081");
 
-    ((HttpServletResponse) response)
-        .setHeader("Access-Control-Allow-Methods", "GET, DELETE, OPTIONS, HEAD, PUT, POST");
+    ((HttpServletResponse) response).setHeader("Access-Control-Allow-Methods", "*");
 
     ((HttpServletResponse) response).setHeader("Access-Control-Allow-Headers", "*");
 
     ((HttpServletResponse) response).setHeader("Access-Control-Allow-Credentials", "true");
+
+    if ("OPTIONS".equalsIgnoreCase(((HttpServletRequest) request).getMethod())) {
+      new ServletService()
+          .dispatch((HttpServletResponse) response, new Payload<>(HttpStatus.OK, ""));
+
+      return;
+    }
 
     chain.doFilter(request, response);
   }

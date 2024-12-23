@@ -44,7 +44,7 @@ public class LoginServlet extends HttpServlet {
         throw new IllegalArgumentException("Wrong username or password");
       }
 
-      service.dispatch(response, new Payload<>(HttpStatus.OK, JsonWebToken.encode(user)));
+      service.dispatch(response, new Payload<>(HttpStatus.OK, Json.from(user)));
     } catch (IllegalArgumentException exception) {
       service.dispatch(response, new Payload<>(HttpStatus.UNAUTHORIZED, exception.getMessage()));
     } catch (Exception exception) {
